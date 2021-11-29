@@ -33,6 +33,11 @@ def volts_to_percent(volts):
 def get_value(ain, samples=500):
     return sum([ain.value for _ in range(samples)]) / samples
 
+def measure_soil(sensor):
+    cap_raw = get_value(sensor)
+    cap_percent = volts_to_percent(cap_raw)
+    return cap_percent
+
 while True:
 
     cap_raw = get_value(soil_sens)
