@@ -2,6 +2,7 @@ import time
 import board
 import busio
 import displayio
+import digitalio
 import terminalio
 from adafruit_display_text import label
 import adafruit_displayio_ssd1306
@@ -35,4 +36,37 @@ while True:
 
     time.sleep(2)
 
-#
+#LED Lights
+
+# Configure the internal GPIO connected to the red LED as a digital output
+ledr = digitalio.DigitalInOut(board.GP17)
+ledr.direction = digitalio.Direction.OUTPUT
+
+# Configure the internal GPIO connected to the green LED as a digital output
+ledg = digitalio.DigitalInOut(board.GP18)
+ledg.direction = digitalio.Direction.OUTPUT
+
+# Configure the internal GPIO connected to the yellow LED as a digital output
+ledy = digitalio.DigitalInOut(board.GP19)
+ledy.direction = digitalio.Direction.OUTPUT
+
+# Configure the internal GPIO connected to the first button as a digital input
+button1 = digitalio.DigitalInOut(board.GP15)
+button1.direction = digitalio.Direction.INPUT
+button1.pull = digitalio.Pull.UP # Set the internal resistor to pull-up
+
+# Configure the internal GPIO connected to the second button as a digital input
+button2 = digitalio.DigitalInOut(board.GP14) 
+button2.direction = digitalio.Direction.INPUT
+button2.pull = digitalio.Pull.UP # Set the internal resistor to pull-up
+
+# Configure the internal GPIO connected to the third button as a digital input
+button3 = digitalio.DigitalInOut(board.GP13) 
+button3.direction = digitalio.Direction.INPUT
+button3.pull = digitalio.Pull.UP # Set the internal resistor to pull-up
+
+# Loop so the code runs continuously
+while True:
+	ledr.value = not button1.value 	# turn on red light if button 1 is pressed
+	ledg.value = not button2.value	# turn on green light if button 2 is pressed
+    ledy.value = not button3.value	# turn on green light if button 3 is pressed
