@@ -18,7 +18,11 @@ ULTRA_ECHO_PIN = board.GP3
 SOIL_SENS_PIN = board.GP26
 INPUT_BUTTON_PIN = board.GP18
 EMERG_BUTTON_PIN = ??? #FILL THIS IN
-# add in motor pins
+# Coil pins for stepper motor DOUBLE CHECK THIS
+COIL_PIN_1 = board.GP14
+COIL_PIN_2 = board.GP15
+COIL_PIN_3 = board.GP16
+COIL_PIN_4 = board.GP17
 
 # Initialize OLED display
 displayio.release_displays()
