@@ -13,8 +13,8 @@ import adafruit_displayio_ssd1306
 # Input and Output GPIO Pins
 OLED_SCL_PIN = board.GP5
 OLED_SDA_PIN = board.GP4
-ULTRA_TRIG_PIN = board.GP2
-ULTRA_ECHO_PIN = board.GP3
+SONAR_TRIG_PIN = board.GP2
+SONAR_ECHO_PIN = board.GP3
 SOIL_SENS_PIN = board.GP26
 INPUT_BUTTON_PIN = board.GP18
 EMERG_BUTTON_PIN = ??? #FILL THIS IN
@@ -44,7 +44,7 @@ distance = None # Measured distance
 calibrated = False # State of calibration
 calibration = None # Calibrated distance
 
-sonar = adafruit_hcsr04.HCSR04(trigger_pin=ULTRA_TRIG_PIN, echo_pin=ULTRA_ECHO_PIN)
+sonar = adafruit_hcsr04.HCSR04(trigger_pin=SONAR_TRIG_PIN, echo_pin=SONAR_ECHO_PIN)
 
 # Initialize soil sensor
 soil_sens = analogio.AnalogIn(SOIL_SENS_PIN)
