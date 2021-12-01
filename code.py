@@ -8,6 +8,7 @@ import terminalio
 import time
 import adafruit_hcsr04
 from adafruit_display_text import label
+from adafruit_motor import stepper
 import adafruit_displayio_ssd1306
 
 # Input and Output GPIO Pins
