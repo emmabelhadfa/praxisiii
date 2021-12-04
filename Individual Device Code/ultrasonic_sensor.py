@@ -9,7 +9,7 @@ led = digitalio.DigitalInOut(board.LED)
 led.direction = digitalio.Direction.OUTPUT
 
 # Configure the internal GPIO connected to the button as a digital input
-button = digitalio.DigitalInOut(board.GP18)
+button = digitalio.DigitalInOut(board.GP8)
 button.direction = digitalio.Direction.INPUT
 button.pull = digitalio.Pull.UP # Set the internal resistor to pull-up
 
@@ -19,7 +19,7 @@ distance = None # Measured distance
 calibrated = False # State of calibration
 calibration = None # Calibrated distance
 
-sonar = adafruit_hcsr04.HCSR04(trigger_pin=board.GP2, echo_pin=board.GP3)
+sonar = adafruit_hcsr04.HCSR04(trigger_pin=board.GP12, echo_pin=board.GP11)
 
 while True:
     if calibrated == False and calib_notif_sent == False:

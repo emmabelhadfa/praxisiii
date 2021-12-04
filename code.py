@@ -65,7 +65,7 @@ button = digitalio.DigitalInOut(INPUT_BUTTON_PIN)
 button.direction = digitalio.Direction.INPUT
 button.pull = digitalio.Pull.UP # Set the internal resistor to pull-up
 
-emergency_stop = digitalio.DigitalInOut(INPUT_BUTTON_PIN)
+emergency_stop = digitalio.DigitalInOut(EMERG_BUTTON_PIN)
 emergency_stop.direction = digitalio.Direction.INPUT
 emergency_stop.pull = digitalio.Pull.UP # Set the internal resistor to pull-up
 
@@ -151,7 +151,7 @@ def display_result_oled(measurement, recommend, display_device):
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=56)
     text_group.append(text_area)
 
-    display_device.clear()
+    #display_device.clear()
     display_device.show(text_group)
 
     return
@@ -211,13 +211,14 @@ def calibrate_device(sonar_sens):
     dist2 = sonar_sens.distance
     time.sleep(2)
     dist3 = sonar_sens.distance
+    print(dist1, dist2, dist3)
 
     mean = (dist1+ dist2 + dist3) / 3
 
     SD = (((dist1-mean)**2 + (dist2-mean)**2 + (dist3-mean)**2)/2)**0.5
     
     # Check the standard deviation of the measurements to check if there was an erroneous measurement
-    if SD < 3:
+    if SD > 5:
         # Return a distance of 1111 to signify a calibration error (SD of measurements too high)
         calibration = -1
         return calibration
@@ -263,7 +264,7 @@ def sample_dist(sonar_sens, calib_dist):
 
 def calib_error(display_device, button, yellow_led):
     text_group = displayio.Group()
-
+    print("ERROR: Calibration Error")
     text = "ERROR: Calibration Error"
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=4)
     text_group.append(text_area)
@@ -271,7 +272,7 @@ def calib_error(display_device, button, yellow_led):
     text = "Press INPUT to proceed. . .%"
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=17)
     text_group.append(text_area)
-    display_device.clear()
+    #display_device.clear()
     display_device.show(text_group)
 
     yellow_led.value = True
@@ -279,14 +280,15 @@ def calib_error(display_device, button, yellow_led):
     while button.value == True:
         pass
     
-    display_device.clear()
+    #display_device.clear()
     yellow_led.value = False
 
     return
 
 def sample_height_error(display_device, button, yellow_led):
     text_group = displayio.Group()
-
+    
+    print("ERROR: Sample Height Error")
     text = "ERROR: Sample Height Error"
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=4)
     text_group.append(text_area)
@@ -294,7 +296,7 @@ def sample_height_error(display_device, button, yellow_led):
     text = "Press INPUT to proceed. . .%"
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=17)
     text_group.append(text_area)
-    display_device.clear()
+    #display_device.clear()
     display_device.show(text_group)
 
     yellow_led.value = True
@@ -302,7 +304,7 @@ def sample_height_error(display_device, button, yellow_led):
     while button.value == True:
         pass
     
-    display_device.clear()
+    #display_device.clear()
     yellow_led.value = False
 
     return
@@ -310,6 +312,7 @@ def sample_height_error(display_device, button, yellow_led):
 def no_sample_error(display_device, button, yellow_led):
     text_group = displayio.Group()
 
+    print("ERROR: No Sample")
     text = "ERROR: No Sample"
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=4)
     text_group.append(text_area)
@@ -317,7 +320,7 @@ def no_sample_error(display_device, button, yellow_led):
     text = "Press INPUT to proceed. . .%"
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=17)
     text_group.append(text_area)
-    display_device.clear()
+    #display_device.clear()
     display_device.show(text_group)
 
     yellow_led.value = True
@@ -325,7 +328,7 @@ def no_sample_error(display_device, button, yellow_led):
     while button.value == True:
         pass
     
-    display_device.clear()
+    #display_device.clear()
     yellow_led.value = False
 
     return
@@ -333,6 +336,7 @@ def no_sample_error(display_device, button, yellow_led):
 def emerg_stop_err(display_device, button, emergency_stop, yellow_led):
     text_group = displayio.Group()
 
+    print(text = "EMERGENCY STOP")
     text = "EMERGENCY STOP"
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=4)
     text_group.append(text_area)
@@ -340,7 +344,7 @@ def emerg_stop_err(display_device, button, emergency_stop, yellow_led):
     text = "Press INPUT and EMERG_STOP to proceed. . .%"
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=17)
     text_group.append(text_area)
-    display_device.clear()
+    #display_device.clear()
     display_device.show(text_group)
 
     yellow_led.value = True
@@ -348,7 +352,7 @@ def emerg_stop_err(display_device, button, emergency_stop, yellow_led):
     while button.value == True or emergency_stop.value == True:
         pass
     
-    display_device.clear()
+    #display_device.clear()
     yellow_led.value = False
 
     return
@@ -357,6 +361,7 @@ def cleaning_prompt(display_device, button):
 
     text_group = displayio.Group()
 
+    print("Gently wipe down moisture sensor probe")
     text = "Gently wipe down moisture sensor probe"
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=4)
     text_group.append(text_area)
@@ -364,13 +369,13 @@ def cleaning_prompt(display_device, button):
     text = "Press INPUT to proceed. . .%"
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=17)
     text_group.append(text_area)
-    display_device.clear()
+    #display_device.clear()
     display_device.show(text_group)
 
     while button.value == True:
         pass
 
-    display_device.clear()
+    #display_device.clear()
     return
 
 
@@ -403,7 +408,7 @@ while True:
     text = "Press input to test dryness..."
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=y_pos)
     text_group.append(text_area)
-
+    #display.clear()
     display.show(text_group)
 
     # Stay in this while loop until the main input is pressed to avoid constantly refreshing the screen
@@ -413,7 +418,7 @@ while True:
     # LED serves as activation light
     led_board.value = not button.value
 
-    if button.value:
+    if button.value == False:
         just_calibrated = False
         # Record timestamp of button press
         time_pressed = time.monotonic()
@@ -429,10 +434,10 @@ while True:
                 cal_main_text = "Calibrating platform depth"
                 cal_main_text_area = label.Label(terminalio.FONT, text=cal_main_text, color=0xFFFFFF, x=0, y=4)
                 calibrating_group.append(cal_main_text_area)
-                display.clear()
+                #display.clear()
                 display.show(calibrating_group)
 
-                calibration = calibrate_device()
+                calibration = calibrate_device(sonar)
                 # Check for calibration errors
                 if calibration == -1:
                     calib_error(display, button, led_yellow)
@@ -444,7 +449,7 @@ while True:
                     cal_success_text = "Calibrated distance: {:.3f} cm".format(calibration)
                     cal_success_text_area = label.Label(terminalio.FONT, text=cal_success_text, color=0xFFFFFF, x=0, y=4)
                     cal_success_group.append(cal_success_text_area)
-                    display.clear()
+                    #display.clear()
                     display.show(cal_success_group)
                     time.sleep(7)
 
@@ -456,7 +461,7 @@ while True:
             measuring_main_text = "Testing Moisture Content"
             measuring_main_text_area = label.Label(terminalio.FONT, text=measuring_main_text, color=0xFFFFFF, x=0, y=4)
             measuring_group.append(measuring_main_text_area)
-            display.clear()
+            ##display.clear()
             display.show(measuring_group)
 
             distance = sample_dist(sonar, calibration)
@@ -469,6 +474,7 @@ while True:
             else:
                 # Extend sample by that distance
                 (status, dist_travelled) = extend_sensor(distance, motor, emergency_stop)
+                status = 0
                 if status == -1:
                     emerg_stop_err(display, button, emergency_stop, led_yellow)
                     retract_dist = distance - dist_travelled
@@ -482,6 +488,7 @@ while True:
                         recommend = 1
                     display_result_oled(soil_moisture, recommend, display)
                     display_result_LED(recommend, led_red, led_green, button)
+                    '''
                     dist_to_clean = distance - clean_dist
                     (status, dist_travelled) = retract_sensor(dist_to_clean, motor, emergency_stop)
                     if status == -1:
@@ -496,3 +503,4 @@ while True:
                         retract_dist = distance - dist_travelled
                         # This part can get recursive... maybe modify this and improve it if possible
                         (status, distance_travelled) = retract_sensor(retract_dist, motor, emergency_stop)
+                    '''
