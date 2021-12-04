@@ -2,6 +2,11 @@ import time
 import board
 import digitalio
 
+# LED Outputs
+GREEN_LED_PIN = board.GP13
+YELLOW_LED_PIN = board.GP14
+RED_LED_PIN = board.GP15
+
 led_red = digitalio.DigitalInOut(RED_LED_PIN)
 led_green = digitalio.DigitalInOut(GREEN_LED_PIN)
 led_yellow = digitalio.DigitalInOut(YELLOW_LED_PIN)

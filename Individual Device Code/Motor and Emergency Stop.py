@@ -3,6 +3,13 @@ import board
 import digitalio
 from adafruit_motor import stepper
 
+EMERG_BUTTON_PIN = board.GP9
+# Coil pins for stepper motor DOUBLE CHECK THIS
+COIL_PIN_1 = board.GP21 #IN1
+COIL_PIN_2 = board.GP20 #IN2
+COIL_PIN_3 = board.GP19 #IN3
+COIL_PIN_4 = board.GP18 #IN4
+
 emergency_stop = digitalio.DigitalInOut(EMERG_BUTTON_PIN)
 emergency_stop.direction = digitalio.Direction.INPUT
 emergency_stop.pull = digitalio.Pull.UP
