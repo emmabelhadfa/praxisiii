@@ -231,9 +231,9 @@ def calibrate_device(sonar_sens):
         return calibration
 
 def sample_dist(sonar_sens, calib_dist):
-    SAFE_DIST = 10 # Minimum depth of a sample container to ensure safe sampling
-    INSERT_DIST = 8
-    
+    SAFE_DIST = 0 # Minimum depth of a sample container to ensure safe sampling
+    INSERT_DIST = 0
+
     dist1 = sonar_sens.distance
     time.sleep(2)
     dist2 = sonar_sens.distance
