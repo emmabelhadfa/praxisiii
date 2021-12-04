@@ -12,18 +12,26 @@ from adafruit_motor import stepper
 import adafruit_displayio_ssd1306
 
 # Input and Output GPIO Pins
-OLED_SCL_PIN = board.GP5
-OLED_SDA_PIN = board.GP4
-SONAR_TRIG_PIN = board.GP2
-SONAR_ECHO_PIN = board.GP3
+OLED_ADDR = 0x3C
+OLED_HEIGHT = 64
+OLED_WIDTH = 128
+### DOUBLE CHECK ALL PINOUTS
+OLED_SCL_PIN = board.GP0
+OLED_SDA_PIN = board.GP1
+SONAR_TRIG_PIN = board.GP12
+SONAR_ECHO_PIN = board.GP11
 SOIL_SENS_PIN = board.GP26
-INPUT_BUTTON_PIN = board.GP18
-EMERG_BUTTON_PIN = ??? #FILL THIS IN
+INPUT_BUTTON_PIN = board.GP8
+EMERG_BUTTON_PIN = board.GP9
+# LED Outputs
+GREEN_LED_PIN = board.GP13
+YELLOW_LED_PIN = board.GP14
+RED_LED_PIN = board.GP15
 # Coil pins for stepper motor DOUBLE CHECK THIS
-COIL_PIN_1 = board.GP14
-COIL_PIN_2 = board.GP15
-COIL_PIN_3 = board.GP16
-COIL_PIN_4 = board.GP17
+COIL_PIN_1 = board.GP21 #IN1
+COIL_PIN_2 = board.GP20 #IN2
+COIL_PIN_3 = board.GP19 #IN3
+COIL_PIN_4 = board.GP18 #IN4
 
 # Initialize OLED display
 displayio.release_displays()
@@ -39,8 +47,6 @@ button = digitalio.DigitalInOut(INPUT_BUTTON_PIN)
 button.direction = digitalio.Direction.INPUT
 button.pull = digitalio.Pull.UP # Set the internal resistor to pull-up
 
-notif_sent = False # Console notification boolean for sonar state
-calib_notif_sent = False
 distance = None # Measured distance
 calibrated = False # State of calibration
 calibration = None # Calibrated distance
@@ -49,6 +55,14 @@ sonar = adafruit_hcsr04.HCSR04(trigger_pin=SONAR_TRIG_PIN, echo_pin=SONAR_ECHO_P
 
 # Initialize soil sensor
 soil_sens = analogio.AnalogIn(SOIL_SENS_PIN)
+
+# Initialize motor
+coils = (digitalio.DigitalInOut(COIL_PIN_1),digitalio.DigitalInOut(COIL_PIN_2),digitalio.DigitalInOut(COIL_PIN_3),digitalio.DigitalInOut(COIL_PIN_4))
+
+for coil in coils:
+    coil.direction = digitalio.Direction.OUTPUT
+
+motor = stepper.StepperMotor(coils[0], coils[1], coils[2], coils[3], microsteps=None)
 
 # Soil sensor functions
 def volts_to_percent(volts):
@@ -89,6 +103,7 @@ def measure_soil(sensor):
     cap_percent = volts_to_percent(cap_raw)
     return cap_percent
 
+# OLED functions
 def display_result_oled(measurement, recommend, display_io):
     """Displays the measured moisture content value and the drying recommendation on the OLED display given in display_io.
 
@@ -122,6 +137,7 @@ def display_result_oled(measurement, recommend, display_io):
 
     return
 
+# System functions
 def calibrate_device(sonar_sens):
     print("Calibrating platform depth...")
     calibrating_group = displayio.Group()
@@ -135,15 +151,29 @@ def calibrate_device(sonar_sens):
     time.sleep(2)
     dist3 = sonar_sens.distance
 
-    calibration = ???? # FIGURE OUT HOW TO ELIMINATE OUTLIERS
+    mean = (dist1+ dist2 + dist3) / 3
 
+    SD = (((dist1-mean)**2 + (dist2-mean)**2 + (dist3-mean)**2)/2)**0.5
+    
+    # Check the standard deviation of the measurements to check if there was an erroneous measurement
+    if SD < 3:
+        # Return a distance of 1111 to signify a calibration error (SD of measurements too high)
+        calibration = 1111
+        return calibration
+    
+    if mean >= 45:
+        # Return a distance of 1111 to signify a calibration error (platform distance exceeds cable carrier length)
+        calibration = 1111
+        return calibration
+
+    calibration = mean
     return calibration
 
 while True:
     
     text_group = displayio.Group()
 
-    if calibrated == False and calib_notif_sent == False:
+    if calibrated == False:
         print("Platform depth not calibrated! Press Button for 5 sec to calibrate.")
         
         # Send to OLED
@@ -154,24 +184,19 @@ while True:
         text = "Hold input for 5 sec to calibrate"
         text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=17)
         text_group.append(text_area)
+    
+    # Display awaiting input message
+    print("Awaiting Input. Press button to test dryness...")
+    # Send to OLED
+    if calibrated == False:
+        y_pos = 36
+    else:
+        y_pos = 4
+    text = "Press input to test dryness..."
+    text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=y_pos)
+    text_group.append(text_area)
 
-        calib_notif_sent = True
-
-    if notif_sent == False:
-        print("Awaiting Input. Press button to test dryness...")
-
-        # Send to OLED
-        if calibrated == False:
-            y_pos = 36
-        else:
-            y_pos = 4
-        text = "Press input to test dryness..."
-        text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=0, y=y_pos)
-        text_group.append(text_area)
-
-        notif_sent = True
-
-        display.show(text_group)
+    display.show(text_group)
 
     # Stay in this while loop until the main input is pressed to avoid constantly refreshing the screen
     while button.value == True:
