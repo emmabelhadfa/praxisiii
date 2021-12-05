@@ -6,13 +6,22 @@ import terminalio
 from adafruit_display_text import label
 import adafruit_displayio_ssd1306
 
+# Input and Output GPIO Pins
+OLED_ADDR = 0x3C
+OLED_HEIGHT = 64
+OLED_WIDTH = 128
+### DOUBLE CHECK ALL PINOUTS
+OLED_SDA_PIN = board.GP10
+OLED_SCL_PIN = board.GP11
 
 #OLED
 displayio.release_displays()
 
-i2c_oled = busio.I2C(scl=board.GP5, sda=board.GP4)
-display_bus = displayio.I2CDisplay(i2c_oled, device_address=0x3C)
-display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=128, height=64) #changed it to SSD1315
+# Initialize OLED display
+displayio.release_displays()
+i2c_oled = busio.I2C(scl=OLED_SCL_PIN, sda=OLED_SDA_PIN)
+display_bus = displayio.I2CDisplay(i2c_oled, device_address=OLED_ADDR)
+display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=OLED_WIDTH, height=OLED_HEIGHT)
 
 #i2c_sensor = busio.I2C(scl=board.GP3, sda=board.GP2)
 #bmp280 = adafruit_bmp280.Adafruit_BMP280_I2C(i2c_sensor, address=0x76)
